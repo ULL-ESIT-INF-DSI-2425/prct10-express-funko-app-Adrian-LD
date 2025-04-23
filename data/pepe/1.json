@@ -1,0 +1,12 @@
+{
+  "id": 1,
+  "name": "Batman",
+  "description": "The Dark Knight",
+  "type": "Pop!",
+  "genre": "Películas",
+  "franchise": "DC Comics",
+  "number": 0,
+  "exclusive": false,
+  "specialFeatures": "",
+  "marketValue": 150
+}
