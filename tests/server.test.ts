@@ -1,136 +1,89 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
-import request from 'supertest';
-import { app } from '../src/APP/server';
-import { FunkoManager } from '../src/APP/Control_Funkos';
-import { Funko } from '../src/APP/Funko_id';
+import { describe, expect, test } from "vitest";
+import { findCharacter } from "../src/modi-hoy";
 
-// Mock del FunkoManager
-vi.mock('../src/APP/Control_Funkos');
+describe("test", () => {
+  test("", () => 
+    new Promise<void>((done) => {
+      const filter = {
+        name: "Goku",
+        gender: "Male",
+        race: "Saiyan",
+        affiliation: "Z Fighter",
+      };
 
-const testUser = 'testuser';
-const testFunko = {
-  id: 1,
-  name: 'Test Funko',
-  description: 'Test Description',
-  type: 'Pop!',
-  genre: 'Animación',
-  franchise: 'Test Franchise',
-  franchiseNumber: 1,
-  exclusive: true,
-  specialFeatures: 'Test Features',
-  marketValue: 19.99
-};
-
-describe('API de Funko Pops', () => {
-  beforeEach(() => {
-    // Limpiar todos los mocks antes de cada prueba
-    vi.clearAllMocks();
-  });
-
-  describe('Ruta raíz', () => {
-    it('GET / - Debe devolver la documentación de la API', async () => {
-      const response = await request(app).get('/');
-      expect(response.status).toBe(200);
-      expect(response.body).toEqual({
-        status: 'success',
-        message: expect.any(String),
-        endpoints: expect.any(Object),
-        example: expect.any(String)
-      });
-    });
-  });
-
-  describe('Operaciones CRUD', () => {
-    describe('Añadir Funko', () => {
-      it('POST /funkos/:user - Debe añadir un nuevo Funko', async () => {
-        vi.mocked(FunkoManager.prototype.addFunko).mockResolvedValue({
-          success: true,
-          message: 'Funko añadido correctamente',
-          data: testFunko
+      findCharacter(filter)
+        .then((characters) => {
+          expect(characters.length).to.be.greaterThan(0); 
+          expect(characters[0].name).to.be.equal("Goku"); 
+          expect(characters[0].name).to.be.equal("Male"); 
+          expect(characters[0].name).to.be.equal("Saiyan"); 
+          expect(characters[0].name).to.be.equal("Z Fighter"); 
+          done();
+        })
+        .catch((error) => {
+          done(error); 
         });
+    }));
 
-        const response = await request(app)
-          .post(`/funkos/${testUser}`)
-          .send(testFunko);
+  test("", () => 
+    new Promise<void>((done) => {
+      const filter = {
+        name: "4",
+        gender: "Male",
+        race: "Saiyan",
+        affiliation: "Z Fighter",
+      };
 
-        expect(response.status).toBe(201);
-        expect(response.body.success).toBe(true);
-        expect(FunkoManager.prototype.addFunko).toHaveBeenCalledWith(expect.any(Funko));
-      });
-    });
-
-    describe('Listar Funkos', () => {
-      it('GET /funkos/:user - Debe listar todos los Funkos de un usuario', async () => {
-        vi.mocked(FunkoManager.prototype.listFunkos).mockResolvedValue({
-          success: true,
-          data: [testFunko]
+      findCharacter(filter)
+        .then(() => {
+          done(console.log("Error"));
+        })
+        .catch((error) => {
+          expect(error.message).to.be.equal("No se encontraron personaje");
+          done();
         });
+    }));
 
-        const response = await request(app).get(`/funkos/${testUser}`);
+    test("", () => 
+      new Promise<void>((done) => {
+        const filter = {
+          name: "Bulma",
+          gender: "Female",
+          race: "Human",
+          affiliation: "Z Fighter",
+        };
+  
+        findCharacter(filter)
+          .then((characters) => {
+            expect(characters.length).to.be.greaterThan(0); 
+            expect(characters[0].name).to.be.equal("Bulman"); 
+            expect(characters[1].gender).to.be.equal("Female");
+            expect(characters[2].race).to.be.equal("Human"); 
+            expect(characters[3].affiliation).to.be.equal("Z Fighter");
+            done();
+          })
+          .catch((error) => {
+            done(error); 
+          });
+      }));
 
-        expect(response.status).toBe(200);
-        expect(response.body.data).toHaveLength(1);
-        expect(response.body.data[0]).toEqual(testFunko);
-      });
-    });
+      test("", () => 
+        new Promise<void>((done) => {
+          const filter = {
+            name: "",
+            gender: "",
+            race: "",
+            affiliation: "",
+          };
+    
+          findCharacter(filter)
+            .then((characters) => {
+              expect(characters.length).to.be.greaterThan(0); 
+              done();
+            })
+            .catch((error) => {
+              done(error); 
+            });
+        }));
 
-    describe('Obtener Funko específico', () => {
-      it('GET /funkos/:user/:id - Debe devolver un Funko específico', async () => {
-        vi.mocked(FunkoManager.prototype.getFunko).mockResolvedValue({
-          success: true,
-          data: testFunko
-        });
-
-        const response = await request(app).get(`/funkos/${testUser}/1`);
-
-        expect(response.status).toBe(200);
-        expect(response.body.data).toEqual(testFunko);
-      });
-    });
-
-    describe('Actualizar Funko', () => {
-      it('PATCH /funkos/:user/:id - Debe actualizar un Funko existente', async () => {
-        vi.mocked(FunkoManager.prototype.updateFunko).mockResolvedValue({
-          success: true,
-          message: 'Funko actualizado correctamente',
-          data: testFunko
-        });
-
-        const response = await request(app)
-          .patch(`/funkos/${testUser}/1`)
-          .send(testFunko);
-
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
-      });
-    });
-
-    describe('Eliminar Funko', () => {
-      it('DELETE /funkos/:user/:id - Debe eliminar un Funko existente', async () => {
-        vi.mocked(FunkoManager.prototype.deleteFunko).mockResolvedValue({
-          success: true,
-          message: 'Funko eliminado correctamente'
-        });
-
-        const response = await request(app).delete(`/funkos/${testUser}/1`);
-
-        expect(response.status).toBe(200);
-        expect(response.body.success).toBe(true);
-      });
-    });
-  });
-
-  describe('Manejo de errores', () => {
-    it('Debe devolver 404 para rutas no existentes', async () => {
-      const response = await request(app).get('/ruta-inexistente');
-      expect(response.status).toBe(404);
-    });
-
-    it('Debe manejar errores internos del servidor', async () => {
-      vi.mocked(FunkoManager.prototype.listFunkos).mockRejectedValue(new Error('Error de prueba'));
-
-      const response = await request(app).get(`/funkos/${testUser}`);
-      expect(response.status).toBe(500);
-    });
-  });
 });

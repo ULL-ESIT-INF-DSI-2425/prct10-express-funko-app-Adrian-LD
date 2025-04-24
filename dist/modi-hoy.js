@@ -5,7 +5,7 @@ const filter = {
     race: 'Saiyan',
     affiliation: 'Z Fighter',
 };
-function findCharacter(filter) {
+export function findCharacter(filter) {
     const { name, gender, race, affiliation } = filter;
     const url = `https://dragonball-api.com/api/characters?name=${name}&gender=${gender}&race=${race}&affiliation=${affiliation}`;
     return new Promise((resolve, reject) => {
